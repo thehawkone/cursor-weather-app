@@ -1,5 +1,7 @@
 import { getWeather, getForecast } from './api.js';
 import { saveRecentCities, loadRecentCities } from './model.js';
+import { groupForecastByDay } from './utils.js';
+
 
 const state = {
     city: null,
@@ -8,6 +10,8 @@ const state = {
     error: null,
     forecast: null,
     recentCities: null,
+    forecastByDay: null,
+    selectedDay: null,
 };
 
 function initStore() {
@@ -24,6 +28,8 @@ async function searchCity(city) {
     state.error = null;
     state.current = null;
     state.forecast = null;
+    state.forecastByDay = null;
+    state.selectedDay = null;
 
     try {
         let result = await getWeather(city);
@@ -32,6 +38,10 @@ async function searchCity(city) {
         state.current = result;
         state.city = result.name;
         state.forecast = forecast;
+
+        state.forecastByDay = groupForecastByDay(forecast.list);
+        const days = Object.keys(state.forecastByDay);
+        state.selectedDay = days[0];
 
         const cityName = result.name;
         const withoutDuplicate = state.recentCities.filter(
@@ -47,6 +57,8 @@ async function searchCity(city) {
         state.city = null;
         state.error = "Не удалось загрузить погоду для города " + city;
         state.forecast = null;
+        state.forecastByDay = null;
+        state.selectedDay = null;
     }
     finally {
         state.loading = false;
@@ -55,4 +67,8 @@ async function searchCity(city) {
     return state;
 }
 
-export { initStore, getState, searchCity }
+function selectDay(dayKey) {
+    state.selectedDay = dayKey;
+}
+
+export { initStore, getState, searchCity, selectDay }
