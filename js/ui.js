@@ -12,6 +12,7 @@ const temperature = document.getElementById('temperature');
 const description = document.getElementById('description');
 const wind = document.getElementById('wind');
 const humidity = document.getElementById('humidity');
+const recentCitiesList = document.getElementById('recent-cities-list');
 
 function render() {
     const state = getState();
@@ -30,10 +31,10 @@ function render() {
         error.hidden = true;
         currentWeather.hidden = false;
         cityName.textContent = state.current.name;
-        temperature.textContent = `${Math.round(state.current.main.temp)}°C`;
-        description.textContent = state.current.weather[0].description;
-        wind.textContent = `${state.current.wind.speed} м/с`;
-        humidity.textContent = `${state.current.main.humidity}%`;
+        temperature.textContent = `Температура: ${Math.round(state.current.main.temp)}°C`;
+        description.textContent = state.current.weather[0].description.charAt(0).toUpperCase() + state.current.weather[0].description.slice(1);
+        wind.textContent = `Ветер: ${Math.round(state.current.wind.speed)} м/с`;
+        humidity.textContent = `Влажность: ${state.current.main.humidity}%`;
 
         if (state.forecast) {
             forecast.hidden = false;
@@ -43,17 +44,33 @@ function render() {
                 li.textContent = `${item.dt_txt} — ${Math.round(item.main.temp)}°C — ${item.weather[0].description}`;
                 forecastList.appendChild(li);
             });
-
         }
         else {
             forecast.hidden = true;
         }
-
     }
     else {
         loading.hidden = true;
         error.hidden = true;
         currentWeather.hidden = true;
+    }
+    if (state.recentCities && state.recentCities.length > 0) {
+        recentCitiesList.innerHTML = '';
+
+        state.recentCities.forEach((city) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = city;
+
+            button.addEventListener('click', async () => {
+                const promise = searchCity(city);
+                render();
+                await promise;
+                render();
+            });
+
+            recentCitiesList.appendChild(button);
+        });
     }
 }
 

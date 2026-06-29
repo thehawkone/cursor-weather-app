@@ -1,4 +1,5 @@
 import { getWeather, getForecast } from './api.js';
+import { saveRecentCities, loadRecentCities } from './model.js';
 
 const state = {
     city: null,
@@ -6,9 +7,11 @@ const state = {
     loading: false,
     error: null,
     forecast: null,
+    recentCities: null,
 };
 
 function initStore() {
+    state.recentCities = loadRecentCities();
     return state;
 }
 
@@ -25,9 +28,20 @@ async function searchCity(city) {
     try {
         let result = await getWeather(city);
         let forecast = await getForecast(city);
+        
         state.current = result;
         state.city = result.name;
         state.forecast = forecast;
+
+        const cityName = result.name;
+        const withoutDuplicate = state.recentCities.filter(
+            (name) => name !== cityName
+        );
+        const updatedCities = [cityName, ...withoutDuplicate].slice(0, 5);
+
+        saveRecentCities(updatedCities);
+        state.recentCities = updatedCities;
+
     } catch (error) {
         state.current = null;
         state.city = null;
