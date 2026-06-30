@@ -3,48 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Weather App</title>
+  <title>Weather App By Nitka</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles/main.css">
 </head>
-<body>
+<body class="theme-default">
   <main class="weather-app">
-    <h1>Погода</h1>
 
-    <!-- Поиск города -->
-    <form id="search-form">
-      <input type="text" id="city-input" placeholder="Введите город" required>
-      <button type="submit">Найти</button>
-    </form>
 
-    <!-- Сообщения -->
-    <p id="loading" hidden>Загрузка...</p>
-    <p id="error" hidden></p>
+    <header class="header">
+      <div class="header__brand">
+        <img
+        class="header__logo"
+        src="assets\logotype\logo.png"
+        alt="Weather App by Nitka"
+        width="180"
+        height="40"
+      >
+      </div>
 
-    <!-- Текущая погода -->
-    <section id="current-weather" hidden>
-      <h2 id="city-name"></h2>
-      <p id="temperature"></p>
-      <p id="description"></p>
-      <p id="wind"></p>
-      <p id="humidity"></p>
+      <div class="search-wrapper" id="search-wrapper">
+        <form class="search-form" id="search-form">
+          <input
+            type="text"
+            id="city-input"
+            class="search-form__input"
+            placeholder="Введите город..."
+            autocomplete="off"
+            required
+          >
+          <button type="submit" class="search-form__submit" aria-label="Найти">
+            🔍
+          </button>
+        </form>
+
+        <div class="search-dropdown" id="search-dropdown" hidden>
+          <p class="search-dropdown__title">Недавние</p>
+          <ul class="search-dropdown__list" id="recent-cities-list"></ul>
+        </div>
+      </div>
+    </header>
+
+
+    <p class="message message--loading" id="loading" hidden>Загрузка...</p>
+    <p class="message message--error" id="error" hidden></p>
+
+
+    <section class="panel panel--hero" id="current-weather" hidden>
+      <div class="hero__main">
+        <p class="hero__date" id="current-date"></p>
+        <h1 class="hero__city" id="city-name"></h1>
+        <p class="hero__temperature" id="temperature"></p>
+        <p class="hero__feels" id="feels-like"></p>
+      </div>
+
+      <div class="hero__aside">
+        <img class="hero__icon" id="weather-icon" src="" alt="" hidden>
+        <p class="hero__description" id="description"></p>
+
+        <ul class="hero__stats">
+          <li class="hero__stat">
+            <span class="hero__stat-label">Осадки:</span>
+            <span class="hero__stat-value" id="precipitation">—</span>
+          </li>
+          <li class="hero__stat">
+            <span class="hero__stat-label">Влажность:</span>
+            <span class="hero__stat-value" id="humidity"></span>
+          </li>
+          <li class="hero__stat">
+            <span class="hero__stat-label">Ветер:</span>
+            <span class="hero__stat-value" id="wind"></span>
+          </li>
+        </ul>
+      </div>
     </section>
 
-    <!-- Прогноз (добавите позже) -->
-    <section id="daily-forecast" hidden>
-      <h3>По дням</h3>
-      <div id="daily-buttons"></div>
-    </section>
-    
-    <section id="hourly-forecast" hidden>
-      <h3>За день</h3>
-      <div id="hourly-row" class="hourly-row"></div>
+
+    <section class="panel panel--hourly" id="hourly-forecast" hidden>
+      <div class="hourly-tabs" id="hourly-tabs">
+        <button type="button" class="hourly-tabs__btn hourly-tabs__btn--active" data-tab="temp">
+          Температура
+        </button>
+        <button type="button" class="hourly-tabs__btn" data-tab="wind">
+          Ветер
+        </button>
+        <button type="button" class="hourly-tabs__btn" data-tab="pop">
+          Осадки
+        </button>
+        <button type="button" class="hourly-tabs__btn" data-tab="humidity">
+          Влажность
+        </button>
+      </div>
+
+      <div class="hourly-row" id="hourly-row"></div>
     </section>
 
-    <!-- Последние города -->
-    <section id="recent-cities">
-      <h3>Последние города</h3>
-      <ul id="recent-cities-list"></ul>
+
+    <section class="panel panel--daily" id="daily-forecast" hidden>
+      <h2 class="panel__title">Прогноз на неделю</h2>
+      <div class="daily-cards" id="daily-buttons"></div>
     </section>
+
   </main>
 
   <script type="module" src="js/app.js"></script>
