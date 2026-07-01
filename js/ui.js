@@ -1,12 +1,14 @@
 import { getState, searchCity, selectDay } from './store.js';
 import {
     formatDayLabel,
+    formatDayParts,
     formatTemperature,
     formatHour,
     formatDescription,
     formatCurrentDate,
     getWeatherIconUrl,
     getWeatherTheme,
+    getDaySummary,
     getHourlyValue,
 } from './utils.js';
 
@@ -34,6 +36,29 @@ const hourlyTabs = document.getElementById('hourly-tabs');
 const hourlyRow = document.getElementById('hourly-row');
 
 let activeHourlyTab = 'temp';
+
+function renderDaySummary(button, dayKey, summary) {
+    const parts = formatDayParts(dayKey);
+
+    button.classList.add('daily-card');
+    button.innerHTML = `
+        <div class="daily-card__header">
+            <span class="daily-card__date">${parts.date}</span>
+            <span class="daily-card__weekday">${parts.weekday}</span>
+        </div>
+        <img class="daily-card__icon" src="${getWeatherIconUrl(summary.icon)}" alt="" width="72" height="72">
+        <p class="daily-card__temps">
+            <span class="daily-card__temp-max">${Math.round(summary.maxTemp)}°</span>
+            <span class="daily-card__temp-min">${Math.round(summary.minTemp)}°</span>
+        </p>
+        <p class="daily-card__desc">${formatDescription(summary.description)}</p>
+        <ul class="daily-card__stats">
+            <li>Ветер: ${Math.round(summary.avgWind)} м/с</li>
+            <li>Осадки: ${Math.round(summary.maxPop * 100)}%</li>
+            <li>Влажность: ${Math.round(summary.avgHumidity)}%</li>
+        </ul>
+    `;
+}
 
 function showDropdown() {
     const state = getState();
@@ -156,8 +181,14 @@ function render() {
             Object.keys(state.forecastByDay).forEach((dayKey) => {
                 const button = document.createElement('button');
                 button.type = 'button';
-                button.textContent = formatDayLabel(dayKey);
-
+                const summary = getDaySummary(state.forecastByDay[dayKey]);
+                
+                if (summary) {
+                    renderDaySummary(button, dayKey, summary);
+                } else {
+                    button.textContent = formatDayLabel(dayKey);
+                }
+                
                 if (dayKey === state.selectedDay) {
                     button.classList.add('active');
                 }

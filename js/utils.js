@@ -1,9 +1,17 @@
 export function formatDayLabel(dateStr) {
-    const date = new Date(`${dateStr}T12:00:00`);
-    const day = date.getDate();
-    const month = date.toLocaleDateString('ru-RU', { month: 'short' });
-    const weekday = date.toLocaleDateString('ru-RU', { weekday: 'short' });
-    return `${day} ${month}, ${weekday}`;
+    const { date, weekday } = formatDayParts(dateStr);
+    return `${date}, ${weekday}`;
+}
+
+export function formatDayParts(dateStr) {
+    const dateObj = new Date(`${dateStr}T12:00:00`);
+    const day = dateObj.getDate();
+    const month = dateObj.toLocaleDateString('ru-RU', { month: 'long' });
+    const weekday = dateObj.toLocaleDateString('ru-RU', { weekday: 'short' });
+    return {
+        date: `${day} ${month}`,
+        weekday,
+    };
 }
 
 export function formatTemperature(temperature) {
@@ -92,16 +100,24 @@ export function getHourlyValue(item, tab) {
     }
 }
 
-function getWeatherEmoji(icon) {
-    switch (icon) {
-        case '01d': return '☀️'; case '01n': return '🌙';
-        case '02d': return '⛅️'; case '02n': return '🌙';
-        case '03d': case '03n': return '☁️';
-        case '04d': case '04n': return '☁️';
-        case '09': case '10': return '🌧️';
-        case '11': return '⛈️';
-        case '13': return '❄️';
-        case '50': return '🌫️';
-        default: return '❓';
-    }
+export function getDaySummary(dayItems) {
+    if (!dayItems || dayItems.length === 0) return null;
+
+    const temps = dayItems.map(item => item.main.temp);
+    const minTemp = Math.min(...temps);
+    const maxTemp = Math.max(...temps);
+
+    const middle = dayItems[Math.floor(dayItems.length / 2)];
+    const description = middle.weather[0].description;
+    const icon = middle.weather[0].icon;
+
+    const windSpeeds = dayItems.map((item) => item.wind.speed);
+    const avgWind = windSpeeds.reduce((sum, value) => sum + value, 0) / windSpeeds.length;
+
+    const maxPop = Math.max(...dayItems.map((item) => item.pop ?? 0));
+
+    const humidities = dayItems.map((item) => item.main.humidity);
+    const avgHumidity = humidities.reduce((sum, value) => sum + value, 0) / humidities.length;
+
+    return { minTemp, maxTemp, description, icon, avgWind, maxPop, avgHumidity };
 }
