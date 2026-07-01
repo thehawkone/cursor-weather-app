@@ -1,6 +1,6 @@
 # Weather App by Nitka
 
-Погодное приложение на чистом JavaScript: поиск города, текущая погода, почасовой и недельный прогноз. Данные — [OpenWeatherMap API](https://openweathermap.org/api).
+Погодное приложение на чистом JavaScript: поиск города, текущая погода, почасовой и недельный прогноз. Данные - [OpenWeatherMap API](https://openweathermap.org/api).
 
 ## Возможности
 
